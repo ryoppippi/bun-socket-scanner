@@ -43,6 +43,7 @@ const scanner: Bun.Security.Scanner = {
           client.getScoreByNPMPackage(pkg.name, pkg.version)
         ]);
 
+
         let hasIssues = false;
         let riskLevel: Bun.Security.Advisory['level'] | 'safe' = 'safe';
         let description = '';
@@ -51,15 +52,38 @@ const scanner: Bun.Security.Scanner = {
           const issues = issuesResult.value.data;
           if (issues && issues.length > 0) {
             hasIssues = true;
-            const criticalIssues = issues.filter((issue: any) => 
-              issue.type?.includes('malware') || 
-              issue.type?.includes('trojan') || 
-              issue.type?.includes('backdoor')
+            
+            // Filter for supplyChainRisk category issues like ni.zsh
+            const supplyChainIssues = issues.filter((issue: any) => 
+              issue.value?.category === 'supplyChainRisk'
             );
-
-            if (criticalIssues.length > 0) {
-              riskLevel = 'fatal';
-              description = `Critical security issues found: ${criticalIssues.map((i: any) => i.type).join(', ')}`;
+            
+            if (supplyChainIssues.length > 0) {
+              // Sort by severity: critical > high > middle > low
+              const severityOrder = ['critical', 'high', 'middle', 'low'];
+              const sortedIssues = supplyChainIssues.sort((a: any, b: any) => {
+                const aIndex = severityOrder.indexOf(a.value?.severity);
+                const bIndex = severityOrder.indexOf(b.value?.severity);
+                return aIndex - bIndex;
+              });
+              
+              // Get highest severity issue
+              const highestSeverity = sortedIssues[0]?.value?.severity;
+              
+              if (highestSeverity === 'critical' || highestSeverity === 'high') {
+                riskLevel = 'fatal';
+              } else {
+                riskLevel = 'warn';
+              }
+              
+              // Create message like ni.zsh format
+              const messages = sortedIssues.map((issue: any) => 
+                `${issue.value?.severity} ${issue.type}`
+              ).filter((msg: string, index: number, array: string[]) => 
+                array.indexOf(msg) === array.lastIndexOf(msg) // Remove duplicates
+              );
+              
+              description = `Supply chain risks found: ${messages.join(', ')}`;
             } else {
               riskLevel = 'warn';
               description = `Security issues found: ${issues.map((i: any) => i.type).join(', ')}`;
@@ -69,7 +93,7 @@ const scanner: Bun.Security.Scanner = {
 
         if (scoreResult.status === 'fulfilled' && scoreResult.value.success) {
           const score = scoreResult.value.data;
-          if (score?.supplyChainRisk?.score !== undefined) {
+          if (score?.supplyChainRisk?.score != null) {
             const riskScore = score.supplyChainRisk.score;
             if (riskScore < FATAL_RISK_THRESHOLD) {
               if (riskLevel !== 'fatal') {
@@ -86,11 +110,18 @@ const scanner: Bun.Security.Scanner = {
         }
 
         if (riskLevel !== 'safe') {
+          // Use issue-specific URL format like ni.zsh when we have specific issue types
+          let url = `https://socket.dev/npm/package/${pkg.name}/overview/${pkg.version}`;
+          if (description.includes('Supply chain risks found:')) {
+            // For now, keep the package overview URL as we may have multiple issue types
+            url = `https://socket.dev/npm/package/${pkg.name}/overview/${pkg.version}`;
+          }
+          
           advisories.push({
             level: riskLevel,
             package: pkg.name,
             description: description || `Security concerns detected for ${pkg.name}@${pkg.version}`,
-            url: `https://socket.dev/npm/package/${pkg.name}/overview/${pkg.version}`
+            url
           });
         }
 

@@ -46,7 +46,11 @@ test("should detect fatal risk for malware package", async () => {
 
   mockGetIssuesByNPMPackage.mockResolvedValue({
     success: true,
-    data: [{ type: "malware_detected", description: "Contains malicious code" }]
+    data: [{ 
+      type: "malware_detected", 
+      description: "Contains malicious code",
+      value: { category: "supplyChainRisk", severity: "critical" }
+    }]
   });
   mockGetScoreByNPMPackage.mockResolvedValue({
     success: true,
@@ -59,7 +63,7 @@ test("should detect fatal risk for malware package", async () => {
   expect(result[0]).toEqual({
     level: "fatal",
     package: "malicious-package",
-    description: "Critical security issues found: malware_detected",
+    description: "Supply chain risks found: critical malware_detected",
     url: "https://socket.dev/npm/package/malicious-package/overview/1.0.0"
   });
 });
@@ -74,7 +78,11 @@ test("should detect warning for moderate risk package", async () => {
 
   mockGetIssuesByNPMPackage.mockResolvedValue({
     success: true,
-    data: [{ type: "deprecated_api", description: "Uses deprecated API" }]
+    data: [{ 
+      type: "deprecated_api", 
+      description: "Uses deprecated API",
+      value: { category: "supplyChainRisk", severity: "middle" }
+    }]
   });
   mockGetScoreByNPMPackage.mockResolvedValue({
     success: true,
@@ -87,7 +95,7 @@ test("should detect warning for moderate risk package", async () => {
   expect(result[0]).toEqual({
     level: "warn",
     package: "moderate-package",
-    description: "Security issues found: deprecated_api",
+    description: "Supply chain risks found: middle deprecated_api",
     url: "https://socket.dev/npm/package/moderate-package/overview/1.0.0"
   });
 });
@@ -146,7 +154,11 @@ test("should scan multiple packages", async () => {
 
   mockGetIssuesByNPMPackage
     .mockResolvedValueOnce({ success: true, data: [] })
-    .mockResolvedValueOnce({ success: true, data: [{ type: "backdoor", description: "Potential backdoor" }] });
+    .mockResolvedValueOnce({ success: true, data: [{ 
+      type: "backdoor", 
+      description: "Potential backdoor",
+      value: { category: "supplyChainRisk", severity: "critical" }
+    }] });
   
   mockGetScoreByNPMPackage
     .mockResolvedValueOnce({ success: true, data: { supplyChainRisk: { score: 0.9 } } })
@@ -169,7 +181,7 @@ test("should prioritize fatal over warn based on score", async () => {
 
   mockGetIssuesByNPMPackage.mockResolvedValue({
     success: true,
-    data: [{ type: "deprecation", description: "Package deprecated" }]
+    data: [{ type: "deprecation", description: "Package deprecated" }] // Non-supplyChainRisk issue
   });
   mockGetScoreByNPMPackage.mockResolvedValue({
     success: true,
