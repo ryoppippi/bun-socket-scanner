@@ -28,6 +28,7 @@
 	"main": "src/index.ts",
 	"module": "src/index.ts",
 	"files": [
+		"LICENSE",
 		"README.md",
 		"src/"
 	],
