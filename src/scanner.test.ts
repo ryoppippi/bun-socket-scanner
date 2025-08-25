@@ -8,6 +8,7 @@ const originalEnv = process.env;
 beforeEach(() => {
 	// Clean up environment for each test
 	delete process.env.NI_SOCKETDEV_TOKEN;
+	delete Bun.env.NI_SOCKETDEV_TOKEN;
 });
 
 afterEach(async () => {
@@ -24,19 +25,20 @@ afterEach(async () => {
 });
 
 test('scanner - no API key configured', async () => {
-	const result = await scanner.scan({
-		packages: [
-			{ name: 'test-package', version: '1.0.0', tarball: '', requestedRange: '1.0.0' },
-		],
-	});
-
-	// Should return empty array when no API key is configured
-	expect(result).toEqual([]);
+	// Should throw error when no API key is configured
+	expect(async () => {
+		await scanner.scan({
+			packages: [
+				{ name: 'test-package', version: '1.0.0', tarball: '', requestedRange: '1.0.0' },
+			],
+		});
+	}).toThrow('Socket.dev API key not found. Configure with: bun run src/index.ts set or set NI_SOCKETDEV_TOKEN environment variable');
 });
 
 test('scanner - environment variable API key takes precedence', async () => {
 	// Set both environment variable and secret
 	process.env.NI_SOCKETDEV_TOKEN = 'env-key';
+	Bun.env.NI_SOCKETDEV_TOKEN = 'env-key';
 	await setApiKey('secret-key');
 
 	// Mock console.warn to verify it's not called when key exists
@@ -84,6 +86,7 @@ test('scanner - uses Bun.secrets when no environment variable', async () => {
 test('scanner - empty environment variable fallback to secrets', async () => {
 	// Set empty environment variable and a secret
 	process.env.NI_SOCKETDEV_TOKEN = '';
+	Bun.env.NI_SOCKETDEV_TOKEN = '';
 	await setApiKey('secret-key');
 
 	// Mock console.warn to verify it's not called when secret key exists
@@ -111,6 +114,7 @@ test('scanner - version property', () => {
 
 test('scanner - empty packages array', async () => {
 	process.env.NI_SOCKETDEV_TOKEN = 'test-key';
+	Bun.env.NI_SOCKETDEV_TOKEN = 'test-key';
 
 	const result = await scanner.scan({
 		packages: [],
