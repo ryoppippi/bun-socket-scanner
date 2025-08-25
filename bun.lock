@@ -5,6 +5,7 @@
       "name": "bun-socket-scanner",
       "dependencies": {
         "@socketsecurity/sdk": "^1.4.75",
+        "gunshi": "^0.26.3",
       },
       "devDependencies": {
         "@ryoppippi/eslint-config": "^0.3.7",
@@ -12,7 +13,6 @@
         "bun-types": "^1.2.21",
         "eslint": "^9.34.0",
         "eslint-plugin-format": "^1.0.1",
-        "gunshi": "^0.26.3",
       },
     },
   },

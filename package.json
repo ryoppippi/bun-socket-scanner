@@ -42,14 +42,14 @@
 		"start": "bun run src/index.ts"
 	},
 	"dependencies": {
-		"@socketsecurity/sdk": "^1.4.75"
+		"@socketsecurity/sdk": "^1.4.75",
+		"gunshi": "^0.26.3"
 	},
 	"devDependencies": {
 		"@ryoppippi/eslint-config": "^0.3.7",
 		"@typescript/native-preview": "^7.0.0-dev.20250825.1",
 		"bun-types": "^1.2.21",
 		"eslint": "^9.34.0",
-		"eslint-plugin-format": "^1.0.1",
-		"gunshi": "^0.26.3"
+		"eslint-plugin-format": "^1.0.1"
 	}
 }
