@@ -27,6 +27,8 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: bun run test
+        env:
+          BUN_SOCKET_TOKEN: token
 
   npm-publish-dry-run-and-upload-pkg-pr-now:
     runs-on: ubuntu-latest
