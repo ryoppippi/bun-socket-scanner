@@ -2,13 +2,13 @@ import { afterEach, beforeEach, expect, test } from 'bun:test';
 import { scanner } from './scanner';
 import { deleteApiKey, setApiKey } from './secrets';
 
-// Mock environment variables
-const originalEnv = process.env;
+// Mock environment variables - not used but kept for future compatibility
 
 beforeEach(() => {
 	// Clean up environment for each test
-	delete process.env.NI_SOCKETDEV_TOKEN;
 	delete Bun.env.NI_SOCKETDEV_TOKEN;
+	delete Bun.env.BUN_SOCKET_SCANNER_FATAL_THRESHOLD;
+	delete Bun.env.BUN_SOCKET_SCANNER_WARN_THRESHOLD;
 });
 
 afterEach(async () => {
@@ -20,8 +20,7 @@ afterEach(async () => {
 		// Ignore errors if key doesn't exist
 	}
 
-	// Restore original environment
-	process.env = { ...originalEnv };
+	// Restore original environment (Bun.env is read-only, so we just clean up what we set)
 });
 
 test('scanner - no API key configured', async () => {
@@ -37,7 +36,6 @@ test('scanner - no API key configured', async () => {
 
 test('scanner - environment variable API key takes precedence', async () => {
 	// Set both environment variable and secret
-	process.env.NI_SOCKETDEV_TOKEN = 'env-key';
 	Bun.env.NI_SOCKETDEV_TOKEN = 'env-key';
 	await setApiKey('secret-key');
 
@@ -85,7 +83,6 @@ test('scanner - uses Bun.secrets when no environment variable', async () => {
 
 test('scanner - empty environment variable fallback to secrets', async () => {
 	// Set empty environment variable and a secret
-	process.env.NI_SOCKETDEV_TOKEN = '';
 	Bun.env.NI_SOCKETDEV_TOKEN = '';
 	await setApiKey('secret-key');
 
@@ -113,7 +110,6 @@ test('scanner - version property', () => {
 });
 
 test('scanner - empty packages array', async () => {
-	process.env.NI_SOCKETDEV_TOKEN = 'test-key';
 	Bun.env.NI_SOCKETDEV_TOKEN = 'test-key';
 
 	const result = await scanner.scan({
@@ -121,4 +117,63 @@ test('scanner - empty packages array', async () => {
 	});
 
 	expect(result).toEqual([]);
+});
+
+test('scanner - custom threshold environment variables', async () => {
+	// Set custom thresholds
+	Bun.env.BUN_SOCKET_SCANNER_FATAL_THRESHOLD = '0.1';
+	Bun.env.BUN_SOCKET_SCANNER_WARN_THRESHOLD = '0.8';
+	Bun.env.NI_SOCKETDEV_TOKEN = 'test-key';
+
+	// Mock logger.warn to capture validation messages
+	const { logger } = await import('./logger');
+	const originalWarn = logger.warn;
+	const warnMessages: string[] = [];
+	logger.warn = (...args: unknown[]) => {
+		warnMessages.push(args.join(' '));
+	};
+
+	// Re-import scanner to pick up new environment variables
+	delete require.cache[require.resolve('./scanner')];
+	const { scanner: newScanner } = await import('./scanner');
+
+	const result = await newScanner.scan({
+		packages: [],
+	});
+
+	expect(result).toEqual([]);
+	// Should not warn about threshold values since they are valid
+	expect(warnMessages.filter(msg => msg.includes('Invalid'))).toHaveLength(0);
+
+	logger.warn = originalWarn;
+});
+
+test('scanner - invalid threshold environment variables use defaults', async () => {
+	// Set invalid thresholds
+	Bun.env.BUN_SOCKET_SCANNER_FATAL_THRESHOLD = 'invalid';
+	Bun.env.BUN_SOCKET_SCANNER_WARN_THRESHOLD = '2.0';
+	Bun.env.NI_SOCKETDEV_TOKEN = 'test-key';
+
+	// Mock logger.warn to capture validation messages
+	const { logger } = await import('./logger');
+	const originalWarn = logger.warn;
+	const warnMessages: string[] = [];
+	logger.warn = (...args: unknown[]) => {
+		warnMessages.push(args.join(' '));
+	};
+
+	// Re-import scanner to pick up new environment variables
+	delete require.cache[require.resolve('./scanner')];
+	const { scanner: newScanner } = await import('./scanner');
+
+	const result = await newScanner.scan({
+		packages: [],
+	});
+
+	expect(result).toEqual([]);
+	// Should warn about invalid threshold values
+	expect(warnMessages.some(msg => msg.includes('Invalid BUN_SOCKET_SCANNER_FATAL_THRESHOLD'))).toBe(true);
+	expect(warnMessages.some(msg => msg.includes('Invalid BUN_SOCKET_SCANNER_WARN_THRESHOLD'))).toBe(true);
+
+	logger.warn = originalWarn;
 });

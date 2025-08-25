@@ -2,11 +2,38 @@ import { SocketSdk } from '@socketsecurity/sdk';
 import { logger } from './logger';
 import { getApiKey } from './secrets';
 
-/** Threshold for fatal security risk level (below this score triggers fatal advisory) */
-const FATAL_RISK_THRESHOLD = 0.3;
+/**
+ * Get threshold value from environment variable or use default
+ * @param envVar - Environment variable name
+ * @param defaultValue - Default value if environment variable is not set
+ * @returns Parsed threshold value
+ */
+function getThreshold(envVar: string, defaultValue: number): number {
+	const envValue = Bun.env[envVar];
+	if (envValue != null && envValue !== '') {
+		const parsed = Number.parseFloat(envValue);
+		if (Number.isNaN(parsed) || parsed < 0 || parsed > 1) {
+			logger.warn(`Invalid ${envVar} value: ${envValue}. Must be between 0 and 1. Using default: ${defaultValue}`);
+			return defaultValue;
+		}
+		return parsed;
+	}
+	return defaultValue;
+}
 
-/** Threshold for warning security risk level (below this score triggers warning advisory) */
-const WARN_RISK_THRESHOLD = 0.5;
+/**
+ * Threshold for fatal security risk level (below this score triggers fatal advisory)
+ * Can be customized via BUN_SOCKET_SCANNER_FATAL_THRESHOLD environment variable (0-1)
+ * @default 0.3
+ */
+const FATAL_RISK_THRESHOLD = getThreshold('BUN_SOCKET_SCANNER_FATAL_THRESHOLD', 0.3);
+
+/**
+ * Threshold for warning security risk level (below this score triggers warning advisory)
+ * Can be customized via BUN_SOCKET_SCANNER_WARN_THRESHOLD environment variable (0-1)
+ * @default 0.5
+ */
+const WARN_RISK_THRESHOLD = getThreshold('BUN_SOCKET_SCANNER_WARN_THRESHOLD', 0.5);
 
 /**
  * Bun security scanner that integrates with Socket.dev to detect package vulnerabilities
