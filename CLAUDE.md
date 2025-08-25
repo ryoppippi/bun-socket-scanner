@@ -9,6 +9,7 @@ This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket
 ## Development Commands
 
 ### Core Development
+
 - `bun test` - Run all tests using Bun's built-in test runner
 - `bun run typecheck` - Run TypeScript type checking with `tsgo --noEmit`
 - `bun run lint` - Run ESLint with caching
@@ -16,6 +17,7 @@ This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket
 - `bun run start` - Run the CLI interface for API key management
 
 ### Testing
+
 - All test files are located in `src/` directory with `.test.ts` suffix
 - Tests use Bun's built-in test framework (`bun:test`)
 - Mock the Socket SDK using `mock.module()` for API testing
@@ -25,22 +27,26 @@ This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket
 ### Core Components
 
 **Scanner (`src/scanner.ts`)**
+
 - Main security scanner implementing `Bun.Security.Scanner` interface
 - Integrates with Socket.dev API to check package vulnerabilities and supply chain risks
 - Uses two risk thresholds: `FATAL_RISK_THRESHOLD = 0.3`, `WARN_RISK_THRESHOLD = 0.5`
 - Returns advisories with `fatal` or `warn` levels based on severity
 
 **Secrets Management (`src/secrets.ts`)**
+
 - Handles Socket.dev API key storage using `Bun.secrets`
 - Prioritizes environment variable `NI_SOCKETDEV_TOKEN` over stored secrets
 - Provides secure storage/retrieval operations
 
 **CLI Interface (`src/cli.ts`)**
+
 - Command-line interface for API key management using `gunshi` CLI framework
 - Commands: `set`, `delete`, `status` for managing Socket.dev API keys
 - Entry point: `src/index.ts` (when `import.meta.main`)
 
 **Input Utilities (`src/input.ts`)**
+
 - Secure password input with masking for API key entry
 - Handles Ctrl+C cancellation and backspace editing
 
@@ -48,7 +54,7 @@ This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket
 
 - **Entry point**: `src/index.ts` exports the scanner and handles CLI mode
 - **Scanner interface**: Implements `Bun.Security.Scanner` with version '1'
-- **Dependencies**: 
+- **Dependencies**:
   - `@socketsecurity/sdk` for Socket.dev API integration
   - `gunshi` for CLI framework
   - `consola` for logging
@@ -63,12 +69,14 @@ This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket
 ## Security Scanner Integration
 
 The scanner is designed to be used in `bunfig.toml`:
+
 ```toml
 [install.security]
 scanner = "bun-socket-scanner"
 ```
 
 It scans packages during installation and:
+
 1. Queries Socket.dev API for security issues and supply chain scores
 2. Categorizes risks as `fatal` (blocks install) or `warn` (prompts user)
 3. Provides detailed descriptions and URLs for security reports
