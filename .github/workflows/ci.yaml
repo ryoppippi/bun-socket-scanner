@@ -26,12 +26,6 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      - name: Check jq is available
-        run: which jq && jq --version
-      - name: Create default Claude directories for tests
-        run: |
-          mkdir -p $HOME/.claude/projects
-          mkdir -p $HOME/.config/claude/projects
       - run: bun run test
 
   npm-publish-dry-run-and-upload-pkg-pr-now:
