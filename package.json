@@ -1,12 +1,48 @@
 {
   "name": "bun-socket-scanner",
+  "version": "0.1.0",
+  "description": "A Bun security scanner that integrates with Socket.dev for package vulnerability detection",
+  "main": "index.ts",
   "module": "index.ts",
   "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
+  "keywords": [
+    "bun",
+    "security",
+    "scanner",
+    "socket.dev",
+    "vulnerability",
+    "supply-chain"
+  ],
+  "author": "ryoppippi",
+  "license": "MIT",
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsgo --noEmit"
   },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+  "exports": {
+    ".": "./index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.ts",
+    "README.md"
+  ],
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@typescript/native-preview": "^7.0.0-dev.20250825.1",
+    "bun-types": "^1.2.21"
+  },
+  "dependencies": {
+    "@socketsecurity/sdk": "^1.4.75"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryoppippi/bun-socket-scanner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ryoppippi/bun-socket-scanner/issues"
+  },
+  "homepage": "https://github.com/ryoppippi/bun-socket-scanner#readme"
 }
