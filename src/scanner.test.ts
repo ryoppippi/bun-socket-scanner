@@ -129,9 +129,11 @@ test('scanner - custom threshold environment variables', async () => {
 	const { logger } = await import('./logger');
 	const originalWarn = logger.warn;
 	const warnMessages: string[] = [];
-	logger.warn = (...args: unknown[]) => {
+	logger.warn = Object.assign((...args: unknown[]) => {
 		warnMessages.push(args.join(' '));
-	};
+	}, { raw: (...args: unknown[]) => {
+		warnMessages.push(args.join(' '));
+	}});
 
 	// Re-import scanner to pick up new environment variables
 	delete require.cache[require.resolve('./scanner')];
@@ -158,9 +160,11 @@ test('scanner - invalid threshold environment variables use defaults', async () 
 	const { logger } = await import('./logger');
 	const originalWarn = logger.warn;
 	const warnMessages: string[] = [];
-	logger.warn = (...args: unknown[]) => {
+	logger.warn = Object.assign((...args: unknown[]) => {
 		warnMessages.push(args.join(' '));
-	};
+	}, { raw: (...args: unknown[]) => {
+		warnMessages.push(args.join(' '));
+	}});
 
 	// Re-import scanner to pick up new environment variables
 	delete require.cache[require.resolve('./scanner')];

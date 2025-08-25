@@ -63,10 +63,9 @@
 	},
 	"lint-staged": {
 		"*": [
-			"eslint --cache --fix",
-			"bun typecheck"
+			"eslint --cache --fix"
 		],
-		"*.ts": "bun typecheck",
+		"*.ts": "bun run typecheck",
 		"*.test.ts": "bun test"
 	}
 }
