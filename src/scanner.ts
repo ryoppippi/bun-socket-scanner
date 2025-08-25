@@ -32,7 +32,6 @@ export const scanner: Bun.Security.Scanner = {
 
 		const scanResults = await Promise.allSettled(
 			packages.map(async (pkg) => {
-				logger.info(`Scanning package: ${pkg.name}@${pkg.version}`);
 				try {
 					const [issuesResult, scoreResult] = await Promise.allSettled([
 						client.getIssuesByNPMPackage(pkg.name, pkg.version),
