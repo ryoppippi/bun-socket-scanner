@@ -61,6 +61,7 @@
 			"eslint --cache --fix",
 			"bun typecheck"
 		],
+		"*.ts": "bun typecheck",
 		"*.test.ts": "bun test"
 	}
 }
