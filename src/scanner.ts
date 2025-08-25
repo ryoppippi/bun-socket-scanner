@@ -51,7 +51,7 @@ export const scanner: Bun.Security.Scanner = {
 		const apiKey = await getApiKey();
 
 		if (apiKey == null || apiKey === '') {
-			throw new Error('Socket.dev API key not found. Configure with: bun run src/index.ts set or set NI_SOCKETDEV_TOKEN environment variable');
+			throw new Error('Socket.dev API key not found. Configure with: bun run src/index.ts set or set BUN_SOCKET_TOKEN environment variable');
 		}
 
 		const client = new SocketSdk(apiKey);

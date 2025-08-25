@@ -15,8 +15,8 @@ void mock.module('@socketsecurity/sdk', () => ({
 beforeEach(() => {
 	mockGetIssuesByNPMPackage.mockReset();
 	mockGetScoreByNPMPackage.mockReset();
-	process.env.NI_SOCKETDEV_TOKEN = 'test-api-key';
-	Bun.env.NI_SOCKETDEV_TOKEN = 'test-api-key';
+	process.env.BUN_SOCKET_TOKEN = 'test-api-key';
+	Bun.env.BUN_SOCKET_TOKEN = 'test-api-key';
 });
 
 test('scanner version should be 1', () => {
@@ -24,11 +24,11 @@ test('scanner version should be 1', () => {
 });
 
 test('should throw error when no API key', async () => {
-	delete process.env.NI_SOCKETDEV_TOKEN;
-	delete Bun.env.NI_SOCKETDEV_TOKEN;
+	delete process.env.BUN_SOCKET_TOKEN;
+	delete Bun.env.BUN_SOCKET_TOKEN;
 	expect(async () => {
 		await scanner.scan({ packages: [] });
-	}).toThrow('Socket.dev API key not found. Configure with: bun run src/index.ts set or set NI_SOCKETDEV_TOKEN environment variable');
+	}).toThrow('Socket.dev API key not found. Configure with: bun run src/index.ts set or set BUN_SOCKET_TOKEN environment variable');
 });
 
 test('should return empty array for empty packages', async () => {

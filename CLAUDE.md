@@ -36,7 +36,7 @@ This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket
 **Secrets Management (`src/secrets.ts`)**
 
 - Handles Socket.dev API key storage using `Bun.secrets`
-- Prioritizes environment variable `NI_SOCKETDEV_TOKEN` over stored secrets
+- Prioritizes environment variable `BUN_SOCKET_TOKEN` over stored secrets
 - Provides secure storage/retrieval operations
 
 **CLI Interface (`src/cli.ts`)**
@@ -64,7 +64,7 @@ This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket
 - **`bunfig.toml`**: Configures this package as the security scanner
 - **`eslint.config.js`**: Uses `@ryoppippi/eslint-config` with TypeScript support
 - **`tsconfig.json`**: TypeScript configuration with strict settings and Bun types
-- **Environment**: Requires `NI_SOCKETDEV_TOKEN` environment variable or uses `Bun.secrets`
+- **Environment**: Requires `BUN_SOCKET_TOKEN` environment variable or uses `Bun.secrets`
 
 ## Security Scanner Integration
 

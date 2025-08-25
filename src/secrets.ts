@@ -7,12 +7,12 @@ const API_KEY_NAME = 'socket-api-key';
 
 /**
  * Retrieves the Socket.dev API key from environment variables or Bun.secrets
- * Priority: Environment variable (NI_SOCKETDEV_TOKEN) -> Bun.secrets
+ * Priority: Environment variable (BUN_SOCKET_TOKEN) -> Bun.secrets
  * @returns The API key string if found, undefined otherwise
  */
 export async function getApiKey(): Promise<string | undefined> {
 	// First check environment variable
-	const envKey = Bun.env.NI_SOCKETDEV_TOKEN;
+	const envKey = Bun.env.BUN_SOCKET_TOKEN;
 	if (envKey != null && envKey !== '') {
 		return envKey;
 	}

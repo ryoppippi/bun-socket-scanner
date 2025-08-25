@@ -6,7 +6,7 @@ import { deleteApiKey, setApiKey } from './secrets';
 
 beforeEach(() => {
 	// Clean up environment for each test
-	delete Bun.env.NI_SOCKETDEV_TOKEN;
+	delete Bun.env.BUN_SOCKET_TOKEN;
 	delete Bun.env.BUN_SOCKET_SCANNER_FATAL_THRESHOLD;
 	delete Bun.env.BUN_SOCKET_SCANNER_WARN_THRESHOLD;
 });
@@ -31,12 +31,12 @@ test('scanner - no API key configured', async () => {
 				{ name: 'test-package', version: '1.0.0', tarball: '', requestedRange: '1.0.0' },
 			],
 		});
-	}).toThrow('Socket.dev API key not found. Configure with: bun run src/index.ts set or set NI_SOCKETDEV_TOKEN environment variable');
+	}).toThrow('Socket.dev API key not found. Configure with: bun run src/index.ts set or set BUN_SOCKET_TOKEN environment variable');
 });
 
 test('scanner - environment variable API key takes precedence', async () => {
 	// Set both environment variable and secret
-	Bun.env.NI_SOCKETDEV_TOKEN = 'env-key';
+	Bun.env.BUN_SOCKET_TOKEN = 'env-key';
 	await setApiKey('secret-key');
 
 	// Mock console.warn to verify it's not called when key exists
@@ -83,7 +83,7 @@ test('scanner - uses Bun.secrets when no environment variable', async () => {
 
 test('scanner - empty environment variable fallback to secrets', async () => {
 	// Set empty environment variable and a secret
-	Bun.env.NI_SOCKETDEV_TOKEN = '';
+	Bun.env.BUN_SOCKET_TOKEN = '';
 	await setApiKey('secret-key');
 
 	// Mock console.warn to verify it's not called when secret key exists
@@ -110,7 +110,7 @@ test('scanner - version property', () => {
 });
 
 test('scanner - empty packages array', async () => {
-	Bun.env.NI_SOCKETDEV_TOKEN = 'test-key';
+	Bun.env.BUN_SOCKET_TOKEN = 'test-key';
 
 	const result = await scanner.scan({
 		packages: [],
@@ -123,7 +123,7 @@ test('scanner - custom threshold environment variables', async () => {
 	// Set custom thresholds
 	Bun.env.BUN_SOCKET_SCANNER_FATAL_THRESHOLD = '0.1';
 	Bun.env.BUN_SOCKET_SCANNER_WARN_THRESHOLD = '0.8';
-	Bun.env.NI_SOCKETDEV_TOKEN = 'test-key';
+	Bun.env.BUN_SOCKET_TOKEN = 'test-key';
 
 	// Mock logger.warn to capture validation messages
 	const { logger } = await import('./logger');
@@ -154,7 +154,7 @@ test('scanner - invalid threshold environment variables use defaults', async () 
 	// Set invalid thresholds
 	Bun.env.BUN_SOCKET_SCANNER_FATAL_THRESHOLD = 'invalid';
 	Bun.env.BUN_SOCKET_SCANNER_WARN_THRESHOLD = '2.0';
-	Bun.env.NI_SOCKETDEV_TOKEN = 'test-key';
+	Bun.env.BUN_SOCKET_TOKEN = 'test-key';
 
 	// Mock logger.warn to capture validation messages
 	const { logger } = await import('./logger');

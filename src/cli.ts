@@ -13,7 +13,7 @@ async function getApiKeyStatus(): Promise<{
 	source: 'environment' | 'secrets' | 'none';
 }> {
 	// Check environment variable first
-	const envKey = Bun.env.NI_SOCKETDEV_TOKEN;
+	const envKey = Bun.env.BUN_SOCKET_TOKEN;
 	if (envKey != null && envKey !== '') {
 		return {
 			hasKey: true,
@@ -49,7 +49,7 @@ async function showStatus(): Promise<void> {
 		logger.info('✅ API key is configured');
 		switch (status.source) {
 			case 'environment':
-				logger.info('📍 Source: Environment variable (NI_SOCKETDEV_TOKEN)');
+				logger.info('📍 Source: Environment variable (BUN_SOCKET_TOKEN)');
 				break;
 			case 'secrets':
 				logger.info('📍 Source: Bun.secrets (secure storage)');

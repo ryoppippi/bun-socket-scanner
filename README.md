@@ -43,7 +43,7 @@ You can set the API key using either method:
 #### Option A: Environment Variable
 
 ```bash
-export NI_SOCKETDEV_TOKEN="your_socket_api_key_here"
+export BUN_SOCKET_TOKEN="your_socket_api_key_here"
 ```
 
 #### Option B: CLI Tool
@@ -121,7 +121,7 @@ bunx bun-socket-scanner delete
 
 The scanner uses the following environment variables:
 
-- `NI_SOCKETDEV_TOKEN`: Your Socket.dev API key (required)
+- `BUN_SOCKET_TOKEN`: Your Socket.dev API key (required)
 
 ### Risk Score Thresholds
 
@@ -135,10 +135,10 @@ The scanner uses two configurable thresholds to categorize security risks:
 ### No API Key Warning
 
 ```
-NI_SOCKETDEV_TOKEN not found, skipping security scan
+BUN_SOCKET_TOKEN not found, skipping security scan
 ```
 
-**Solution**: Set the `NI_SOCKETDEV_TOKEN` environment variable or use the CLI tool.
+**Solution**: Set the `BUN_SOCKET_TOKEN` environment variable or use the CLI tool.
 
 ### API Errors
 
