@@ -29,7 +29,7 @@ const scanner: Bun.Security.Scanner = {
 	scan: async ({ packages }) => {
 		const apiKey = getSocketApiKey();
 
-		if (apiKey === undefined || apiKey === '') {
+		if (apiKey == null || apiKey === '') {
 			console.warn('NI_SOCKETDEV_TOKEN not found, skipping security scan');
 			return [];
 		}
@@ -112,7 +112,7 @@ const scanner: Bun.Security.Scanner = {
 						else if (riskScore < WARN_RISK_THRESHOLD) {
 							if (riskLevel !== 'fatal') {
 								riskLevel = 'warn';
-								if (description === '') {
+								if (description == null || description === '') {
 									description = `Moderate supply chain risk (score: ${riskScore})`;
 								}
 							}
@@ -131,7 +131,7 @@ const scanner: Bun.Security.Scanner = {
 					advisories.push({
 						level: riskLevel,
 						package: pkg.name,
-						description: description !== '' ? description : `Security concerns detected for ${pkg.name}@${pkg.version}`,
+						description: description != null && description !== '' ? description : `Security concerns detected for ${pkg.name}@${pkg.version}`,
 						url,
 					});
 				}
