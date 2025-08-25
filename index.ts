@@ -46,6 +46,7 @@ const scanner: Bun.Security.Scanner = {
 
 				let riskLevel: Bun.Security.Advisory['level'] | 'safe' = 'safe';
 				let description = '';
+				let primaryIssueType: string | undefined;
 
 				if (issuesResult.status === 'fulfilled' && issuesResult.value.success) {
 					const issues = issuesResult.value.data;
@@ -68,8 +69,9 @@ const scanner: Bun.Security.Scanner = {
 							});
 
 							// Get highest severity issue
-							const firstIssue = sortedIssues[0] as { value?: { severity?: string } } | undefined;
+							const firstIssue = sortedIssues[0] as { value?: { severity?: string }; type?: string } | undefined;
 							const highestSeverity = firstIssue?.value?.severity;
+							primaryIssueType = firstIssue?.type;
 
 							if (highestSeverity === 'critical' || highestSeverity === 'high') {
 								riskLevel = 'fatal';
@@ -123,9 +125,10 @@ const scanner: Bun.Security.Scanner = {
 				if (riskLevel !== 'safe') {
 					// Use issue-specific URL format like ni.zsh when we have specific issue types
 					let url = `https://socket.dev/npm/package/${pkg.name}/overview/${pkg.version}`;
-					if (description.includes('Supply chain risks found:')) {
-						// For now, keep the package overview URL as we may have multiple issue types
-						url = `https://socket.dev/npm/package/${pkg.name}/overview/${pkg.version}`;
+
+					// For supply chain risks, use issue-specific URL like ni.zsh
+					if (description.includes('Supply chain risks found:') && primaryIssueType != null && primaryIssueType !== '') {
+						url = `https://socket.dev/npm/issue/${primaryIssueType}`;
 					}
 
 					advisories.push({

@@ -64,7 +64,7 @@ test('should detect fatal risk for malware package', async () => {
 		level: 'fatal',
 		package: 'malicious-package',
 		description: 'Supply chain risks found: critical malware_detected',
-		url: 'https://socket.dev/npm/package/malicious-package/overview/1.0.0',
+		url: 'https://socket.dev/npm/issue/malware_detected',
 	});
 });
 
@@ -96,7 +96,7 @@ test('should detect warning for moderate risk package', async () => {
 		level: 'warn',
 		package: 'moderate-package',
 		description: 'Supply chain risks found: middle deprecated_api',
-		url: 'https://socket.dev/npm/package/moderate-package/overview/1.0.0',
+		url: 'https://socket.dev/npm/issue/deprecated_api',
 	});
 });
 

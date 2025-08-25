@@ -5,6 +5,7 @@
       "name": "bun-socket-scanner",
       "dependencies": {
         "@socketsecurity/sdk": "^1.4.75",
+        "emails-helper": "^0.0.1-security",
       },
       "devDependencies": {
         "@ryoppippi/eslint-config": "^0.3.7",
@@ -229,6 +230,8 @@
     "devlop": ["devlop@1.1.0", "", { "dependencies": { "dequal": "^2.0.0" } }, "sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA=="],
 
     "electron-to-chromium": ["electron-to-chromium@1.5.208", "", {}, "sha512-ozZyibehoe7tOhNaf16lKmljVf+3npZcJIEbJRVftVsmAg5TeA1mGS9dVCZzOwr2xT7xK15V0p7+GZqSPgkuPg=="],
+
+    "emails-helper": ["emails-helper@0.0.1-security", "", {}, "sha512-QmsbeNuw95ji5jKuGT1ZEdi53yhguG0rDjKPmwSoV5164zPhqLMRaVXxk2JA+L02fdj+dj1tOlfgNWVewfRM2A=="],
 
     "empathic": ["empathic@2.0.0", "", {}, "sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA=="],
 
