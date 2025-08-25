@@ -22,14 +22,14 @@
 		"supply-chain"
 	],
 	"exports": {
-		".": "./index.ts",
+		".": "./src/index.ts",
 		"./package.json": "./package.json"
 	},
-	"main": "index.ts",
-	"module": "index.ts",
+	"main": "src/index.ts",
+	"module": "src/index.ts",
 	"files": [
 		"README.md",
-		"index.ts"
+		"src/"
 	],
 	"engines": {
 		"bun": ">=1.0.0"
@@ -38,7 +38,8 @@
 		"test": "bun test",
 		"typecheck": "tsgo --noEmit",
 		"lint": "eslint --cache .",
-		"format": "bun lint --fix ."
+		"format": "bun lint --fix .",
+		"start": "bun run src/index.ts"
 	},
 	"dependencies": {
 		"@socketsecurity/sdk": "^1.4.75"
@@ -48,6 +49,7 @@
 		"@typescript/native-preview": "^7.0.0-dev.20250825.1",
 		"bun-types": "^1.2.21",
 		"eslint": "^9.34.0",
-		"eslint-plugin-format": "^1.0.1"
+		"eslint-plugin-format": "^1.0.1",
+		"gunshi": "^0.26.3"
 	}
 }

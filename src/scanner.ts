@@ -1,18 +1,11 @@
 import { SocketSdk } from '@socketsecurity/sdk';
+import { getApiKey } from './secrets';
 
 /** Threshold for fatal security risk level (below this score triggers fatal advisory) */
 const FATAL_RISK_THRESHOLD = 0.3;
 
 /** Threshold for warning security risk level (below this score triggers warning advisory) */
 const WARN_RISK_THRESHOLD = 0.5;
-
-/**
- * Retrieves the Socket.dev API key from environment variables
- * @returns The API key string if found, undefined otherwise
- */
-function getSocketApiKey(): string | undefined {
-	return Bun.env.NI_SOCKETDEV_TOKEN;
-}
 
 /**
  * Bun security scanner that integrates with Socket.dev to detect package vulnerabilities
@@ -27,10 +20,11 @@ export const scanner: Bun.Security.Scanner = {
 	 * @returns Promise resolving to array of security advisories
 	 */
 	scan: async ({ packages }) => {
-		const apiKey = getSocketApiKey();
+		const apiKey = await getApiKey();
 
 		if (apiKey == null || apiKey === '') {
-			console.warn('NI_SOCKETDEV_TOKEN not found, skipping security scan');
+			console.warn('Socket.dev API key not found, skipping security scan');
+			console.warn('Configure with: bun run src/index.ts set');
 			return [];
 		}
 
