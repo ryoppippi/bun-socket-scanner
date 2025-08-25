@@ -31,6 +31,7 @@ export const scanner: Bun.Security.Scanner = {
 		const advisories: Bun.Security.Advisory[] = [];
 
 		for (const pkg of packages) {
+			logger.info(`Scanning package: ${pkg.name}@${pkg.version}`);
 			try {
 				const [issuesResult, scoreResult] = await Promise.allSettled([
 					client.getIssuesByNPMPackage(pkg.name, pkg.version),
