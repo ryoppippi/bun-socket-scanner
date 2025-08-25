@@ -1,40 +1,62 @@
 # Bun Socket Security Scanner
 
+<p align="center">
+<a href="https://npmjs.com/package/bun-socket-scanner"><img src="https://img.shields.io/npm/v/bun-socket-scanner?color=yellow" alt="npm version"></a>
+<a href="https://npmjs.com/package/bun-socket-scanner"><img src="https://img.shields.io/npm/dy/bun-socket-scanner" alt="npm downloads"></a>
+<a href="https://packagephobia.com/result?p=bun-socket-scanner"><img src="https://packagephobia.com/badge?p=bun-socket-scanner" alt="install size"></a>
+<a href="https://deepwiki.com/ryoppippi/bun-socket-scanner"><img src="https://img.shields.io/badge/DeepWiki-ryoppippi%2Fbun--socket--scanner-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFdSURBVHgBfVJNSwJBFH5md2dnd1dXV5fSk0dBD0oPHrt069atH9CtW7/AY5cuHTp48NelaweP0aFbB28dg24dPHjxINSBiAjCjZ15b2YJhBcG3ryZ9z7vfe87AyAi8gAHAPjKsqzM5/PtBwKBHcuyHPijLRgMDnq93gWHw7HOGGNkLpeL+Xy+puu6Q0T8JyJy4vH4TCAQ2GGM1QghghDSJoS0CCFN13U/XdcFACCENAghLUJIWwjRI4Q0hRBOOp1eHI/HL+PxeCGdTpdTqdT3YDC44HK5Vhljqm3bFcaYahjGUFGU9mAwaCuK0jYMY6gu67LjOKRer49jsdjqaDT6xvP8rCAIAgAAx3G/qqoqo6oqx3EcsyzrOwzDQqPRGMfj8aWBQGBR0zRLFEXTNE1DURQ1k8ksa5oW9fv9C7Va7apYLJaTyWRRluUFQRBUQRAUWZYXZFluJRKJq3K5fFOv1z8HxWJxJhgMzrPsP38AnwE4VJ9SAz8AAAAASUVORK5CYII=" alt="DeepWiki"></a>
+<a href="https://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"></a>
+</p>
+
 A security scanner for Bun that integrates with Socket.dev to detect vulnerabilities and supply chain risks in npm packages during installation.
 
-## Features
+<div align="center">
+    <img src="https://cdn.jsdelivr.net/gh/ryoppippi/bun-socket-scanner@main/docs/screenshot.jpeg">
+</div>
 
-- 🔍 **Real-time Security Scanning**: Automatically scans packages during `bun install`
-- 🛡️ **Socket.dev Integration**: Leverages Socket.dev's comprehensive vulnerability database
-- ⚡ **Fatal vs Warning Levels**: Categorizes security issues to either block installation or prompt user
-- 🔄 **Supply Chain Risk Detection**: Evaluates packages for supply chain security risks
-- 🎯 **Bun-native**: Built specifically for Bun's security scanner interface
+## Why I Built This
+
+This project was inspired by [ni.zsh's malware detection features](https://efcl.info/2023/08/29/ni.zsh-socket.dev/) and built specifically for Bun's new [Security Scanner API](https://bun.com/blog/bun-v1.2.21#security-scanner-api-for-bun-install) introduced in v1.2.21. It integrates with [Socket.dev](https://socket.dev)'s comprehensive vulnerability database to provide real-time security scanning during package installation, helping protect applications from supply chain attacks and known vulnerabilities. The scanner categorizes security issues into fatal (blocks installation) and warning (prompts user) levels, offering the same proactive security checking that ni.zsh provides but natively integrated with Bun's package installation process.
 
 ## Installation
 
-### 1. Install the Scanner
-
 ```bash
-# Install as a dev dependency
+# First, install the scanner as a dev dependency
 bun add -d bun-socket-scanner
-
-# Or install globally
-bun add -g bun-socket-scanner
 ```
 
-### 2. Get Socket.dev API Key
+### Get Socket.dev API Key
 
-1. Visit [Socket.dev Dashboard](https://socket.dev/dashboard)
-2. Create an account or sign in
-3. Generate an API key with appropriate permissions
+To use this scanner, you need a Socket.dev API key. Follow these steps:
 
-### 3. Configure Environment
+1. Visit [https://socket.dev/](https://socket.dev/) and create an account
+2. Create a project by installing the GitHub App to any repository (any repo works fine)
+3. Navigate to your API tokens page: `https://socket.dev/dashboard/org/gh/{your-username}/settings/api-tokens`
+4. Generate and copy your API token
 
-Create a `.env` file or set the environment variable:
+For more details, see the [ni.zsh Socket.dev integration guide](https://efcl.info/2023/08/29/ni.zsh-socket.dev/).
+
+### 3. Configure API Key
+
+You can set the API key using either method:
+
+#### Option A: Environment Variable
 
 ```bash
-# .env file
-NI_SOCKETDEV_TOKEN=your_socket_api_key_here
+export NI_SOCKETDEV_TOKEN="your_socket_api_key_here"
+```
+
+#### Option B: CLI Tool
+
+```bash
+# Set API key securely
+bunx bun-socket-scanner set
+
+# Check current status
+bunx bun-socket-scanner status
+
+# Delete stored key
+bunx bun-socket-scanner delete
 ```
 
 ### 4. Configure Bun
@@ -55,72 +77,45 @@ bun install express
 # Scanner will check express and its dependencies for security issues
 ```
 
-### Security Levels
+### Security Risk Levels
 
-- **Fatal**: Blocks installation immediately
+The scanner uses Socket.dev's risk scoring system with two thresholds:
+
+- **Fatal (Risk Score < 0.3)**: Blocks installation immediately
   - Critical security issues (malware, trojans, backdoors)
-  - High supply chain risk (score < 0.3)
+  - Very high supply chain risk
 
-- **Warning**: Prompts user for confirmation
+- **Warning (Risk Score 0.3-0.5)**: Prompts user for confirmation
   - Moderate security issues
-  - Moderate supply chain risk (score 0.3-0.5)
+  - Moderate supply chain risk
 
-## Development
+**Note**: Complex packages (bundled, using special Unicode characters, etc.) may trigger false positives. Always verify the package legitimacy before proceeding with installation.
 
-### Testing
+### CLI Commands
 
-```bash
-# Run tests
-bun test
-
-# Run with coverage
-bun test --coverage
-```
-
-### Type Checking
+Manage your Socket.dev API key:
 
 ```bash
-bun run typecheck
+# Set API key (secure input with masking)
+bunx bun-socket-scanner set
+
+# Check API key status
+bunx bun-socket-scanner status
+
+# Delete stored API key
+bunx bun-socket-scanner delete
 ```
 
-### Building
+## How It Works
 
-```bash
-bun run build
-```
-
-## API Reference
-
-The scanner implements the `Bun.Security.Scanner` interface:
-
-```typescript
-type Scanner = {
-	version: '1';
-	scan: (info: { packages: Package[] }) => Promise<Advisory[]>;
-};
-```
-
-### Package Interface
-
-```typescript
-type Package = {
-	name: string; // Package name
-	version: string; // Exact version to install
-	tarball: string; // URL of package's tgz file
-	requestedRange: string; // Version range or tag requested
-};
-```
-
-### Advisory Interface
-
-```typescript
-type Advisory = {
-	level: 'fatal' | 'warn'; // Severity level
-	package: string; // Package name
-	url: string | null; // Link to security report
-	description: string | null; // Brief description
-};
-```
+1. **Package Detection**: When `bun install` runs, Bun calls the scanner with package information
+2. **Socket.dev Query**: Scanner queries Socket.dev API for security issues and supply chain scores
+3. **Risk Assessment**: Evaluates packages based on:
+   - Critical security issues (malware, backdoors)
+   - Supply chain risk scores (using 0.3 and 0.5 thresholds)
+   - General security vulnerabilities
+4. **Decision**: Returns advisories with appropriate severity levels
+5. **User Action**: Bun either blocks installation (fatal) or prompts user (warning)
 
 ## Configuration Options
 
@@ -128,16 +123,12 @@ The scanner uses the following environment variables:
 
 - `NI_SOCKETDEV_TOKEN`: Your Socket.dev API key (required)
 
-## How It Works
+### Risk Score Thresholds
 
-1. **Package Detection**: When `bun install` runs, Bun calls the scanner with package information
-2. **Socket.dev Query**: Scanner queries Socket.dev API for security issues and scores
-3. **Risk Assessment**: Evaluates packages based on:
-   - Critical security issues (malware, backdoors)
-   - Supply chain risk scores
-   - General security issues
-4. **Decision**: Returns advisories with appropriate severity levels
-5. **User Action**: Bun either blocks installation (fatal) or prompts user (warning)
+The scanner uses two configurable thresholds to categorize security risks:
+
+- `FATAL_RISK_THRESHOLD = 0.3`: Packages with risk scores below this threshold trigger fatal warnings (block installation)
+- `WARN_RISK_THRESHOLD = 0.5`: Packages with risk scores between 0.3-0.5 trigger warning prompts
 
 ## Troubleshooting
 
@@ -147,7 +138,7 @@ The scanner uses the following environment variables:
 NI_SOCKETDEV_TOKEN not found, skipping security scan
 ```
 
-**Solution**: Set the `NI_SOCKETDEV_TOKEN` environment variable.
+**Solution**: Set the `NI_SOCKETDEV_TOKEN` environment variable or use the CLI tool.
 
 ### API Errors
 
@@ -157,20 +148,23 @@ The scanner handles API errors gracefully and won't block installations due to n
 
 Socket.dev has API rate limits. The scanner respects these and will warn about quota issues.
 
-## Contributing
+## References & Credits
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass: `bun test`
-5. Submit a pull request
+### Acknowledgements
+
+- [@alii](https://github.com/alii) - For implementing Bun's Security Scanner API
+- [@azu](https://github.com/azu) - Creator of ni.zsh and its Socket.dev integration that inspired this project
+
+### Inspired By
+
+- [ni.zsh](https://github.com/azu/ni.zsh) - Universal package manager wrapper with supply chain security
+- [ni.zsh Socket.dev integration guide](https://efcl.info/2023/08/29/ni.zsh-socket.dev/) - Japanese article about malware detection
+
+### Built With
+
+- [Bun Security Scanner API](https://bun.com/blog/bun-v1.2.21#security-scanner-api-for-bun-install) - Native Bun security scanning
+- [Bun Security Scanner Documentation](https://bun.com/docs/runtime/bunfig#install-security-scanner) - Official documentation
 
 ## License
 
 MIT
-
-## Related Projects
-
-- [Bun](https://bun.com) - Fast all-in-one JavaScript runtime
-- [Socket.dev](https://socket.dev) - Supply chain security platform
-- [Security Scanner Template](https://github.com/oven-sh/security-scanner-template) - Official Bun scanner template
