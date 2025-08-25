@@ -1,5 +1,5 @@
 import { beforeEach, expect, mock, test } from 'bun:test';
-import scanner from './index';
+import { scanner } from './index';
 
 // Mock the Socket SDK
 const mockGetIssuesByNPMPackage = mock();

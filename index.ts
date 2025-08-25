@@ -18,7 +18,7 @@ function getSocketApiKey(): string | undefined {
  * Bun security scanner that integrates with Socket.dev to detect package vulnerabilities
  * and supply chain risks during package installation.
  */
-const scanner: Bun.Security.Scanner = {
+export const scanner: Bun.Security.Scanner = {
 	version: '1',
 	/**
 	 * Scans packages for security vulnerabilities and supply chain risks
@@ -147,5 +147,3 @@ const scanner: Bun.Security.Scanner = {
 		return advisories;
 	},
 };
-
-export default scanner;
