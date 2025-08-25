@@ -1,48 +1,53 @@
 {
-  "name": "bun-socket-scanner",
-  "version": "0.1.0",
-  "description": "A Bun security scanner that integrates with Socket.dev for package vulnerability detection",
-  "main": "index.ts",
-  "module": "index.ts",
-  "type": "module",
-  "keywords": [
-    "bun",
-    "security",
-    "scanner",
-    "socket.dev",
-    "vulnerability",
-    "supply-chain"
-  ],
-  "author": "ryoppippi",
-  "license": "MIT",
-  "scripts": {
-    "test": "bun test",
-    "typecheck": "tsgo --noEmit"
-  },
-  "exports": {
-    ".": "./index.ts",
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "index.ts",
-    "README.md"
-  ],
-  "engines": {
-    "bun": ">=1.0.0"
-  },
-  "devDependencies": {
-    "@typescript/native-preview": "^7.0.0-dev.20250825.1",
-    "bun-types": "^1.2.21"
-  },
-  "dependencies": {
-    "@socketsecurity/sdk": "^1.4.75"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ryoppippi/bun-socket-scanner.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ryoppippi/bun-socket-scanner/issues"
-  },
-  "homepage": "https://github.com/ryoppippi/bun-socket-scanner#readme"
+	"name": "bun-socket-scanner",
+	"type": "module",
+	"version": "0.1.0",
+	"description": "A Bun security scanner that integrates with Socket.dev for package vulnerability detection",
+	"author": "ryoppippi",
+	"license": "MIT",
+	"homepage": "https://github.com/ryoppippi/bun-socket-scanner#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ryoppippi/bun-socket-scanner.git"
+	},
+	"bugs": {
+		"url": "https://github.com/ryoppippi/bun-socket-scanner/issues"
+	},
+	"keywords": [
+		"bun",
+		"security",
+		"scanner",
+		"socket.dev",
+		"vulnerability",
+		"supply-chain"
+	],
+	"exports": {
+		".": "./index.ts",
+		"./package.json": "./package.json"
+	},
+	"main": "index.ts",
+	"module": "index.ts",
+	"files": [
+		"README.md",
+		"index.ts"
+	],
+	"engines": {
+		"bun": ">=1.0.0"
+	},
+	"scripts": {
+		"test": "bun test",
+		"typecheck": "tsgo --noEmit",
+		"lint": "eslint --cache .",
+		"format": "bun lint --fix ."
+	},
+	"dependencies": {
+		"@socketsecurity/sdk": "^1.4.75"
+	},
+	"devDependencies": {
+		"@ryoppippi/eslint-config": "^0.3.7",
+		"@typescript/native-preview": "^7.0.0-dev.20250825.1",
+		"bun-types": "^1.2.21",
+		"eslint": "^9.34.0",
+		"eslint-plugin-format": "^1.0.1"
+	}
 }

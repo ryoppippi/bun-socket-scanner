@@ -94,32 +94,32 @@ bun run build
 The scanner implements the `Bun.Security.Scanner` interface:
 
 ```typescript
-interface Scanner {
-  version: "1";
-  scan: (info: { packages: Package[] }) => Promise<Advisory[]>;
-}
+type Scanner = {
+	version: '1';
+	scan: (info: { packages: Package[] }) => Promise<Advisory[]>;
+};
 ```
 
 ### Package Interface
 
 ```typescript
-interface Package {
-  name: string;           // Package name
-  version: string;        // Exact version to install
-  tarball: string;        // URL of package's tgz file
-  requestedRange: string; // Version range or tag requested
-}
+type Package = {
+	name: string; // Package name
+	version: string; // Exact version to install
+	tarball: string; // URL of package's tgz file
+	requestedRange: string; // Version range or tag requested
+};
 ```
 
 ### Advisory Interface
 
 ```typescript
-interface Advisory {
-  level: "fatal" | "warn";    // Severity level
-  package: string;            // Package name
-  url: string | null;         // Link to security report
-  description: string | null; // Brief description
-}
+type Advisory = {
+	level: 'fatal' | 'warn'; // Severity level
+	package: string; // Package name
+	url: string | null; // Link to security report
+	description: string | null; // Brief description
+};
 ```
 
 ## Configuration Options
