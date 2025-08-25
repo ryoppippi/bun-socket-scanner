@@ -1,7 +1,7 @@
 {
 	"name": "bun-socket-scanner",
 	"type": "module",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "A Bun security scanner that integrates with Socket.dev for package vulnerability detection",
 	"author": "ryoppippi",
 	"license": "MIT",
