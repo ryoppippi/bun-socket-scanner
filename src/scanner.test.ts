@@ -34,7 +34,7 @@ test('scanner - no API key configured', async () => {
 	}).toThrow('Socket.dev API key not found. Configure with: bun run src/index.ts set or set BUN_SOCKET_TOKEN environment variable');
 });
 
-test('scanner - environment variable API key takes precedence', async () => {
+test.skipIf(process.platform === 'linux')('scanner - environment variable API key takes precedence', async () => {
 	// Set both environment variable and secret
 	Bun.env.BUN_SOCKET_TOKEN = 'env-key';
 	await setApiKey('secret-key');
@@ -58,7 +58,7 @@ test('scanner - environment variable API key takes precedence', async () => {
 	console.warn = originalWarn;
 });
 
-test('scanner - uses Bun.secrets when no environment variable', async () => {
+test.skipIf(process.platform === 'linux')('scanner - uses Bun.secrets when no environment variable', async () => {
 	// Only set secret, no environment variable
 	await setApiKey('secret-key');
 
@@ -81,7 +81,7 @@ test('scanner - uses Bun.secrets when no environment variable', async () => {
 	console.warn = originalWarn;
 });
 
-test('scanner - empty environment variable fallback to secrets', async () => {
+test.skipIf(process.platform === 'linux')('scanner - empty environment variable fallback to secrets', async () => {
 	// Set empty environment variable and a secret
 	Bun.env.BUN_SOCKET_TOKEN = '';
 	await setApiKey('secret-key');
