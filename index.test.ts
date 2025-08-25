@@ -5,7 +5,7 @@ import scanner from './index';
 const mockGetIssuesByNPMPackage = mock();
 const mockGetScoreByNPMPackage = mock();
 
-mock.module('@socketsecurity/sdk', () => ({
+void mock.module('@socketsecurity/sdk', () => ({
 	SocketSdk: mock(() => ({
 		getIssuesByNPMPackage: mockGetIssuesByNPMPackage,
 		getScoreByNPMPackage: mockGetScoreByNPMPackage,
