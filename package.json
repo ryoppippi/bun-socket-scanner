@@ -42,7 +42,7 @@
 		"lint": "eslint --cache .",
 		"format": "bun lint --fix .",
 		"release": "publint && bun lint && bun typecheck && bun test && bumpp",
-		"prepack": "bun run build && bun clean-pkg-json -r scripts.preinstall",
+		"prepack": "bun clean-pkg-json -r scripts.preinstall",
 		"start": "bun run src/index.ts"
 	},
 	"dependencies": {
