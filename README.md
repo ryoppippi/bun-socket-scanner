@@ -8,7 +8,7 @@
 <a href="https://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"></a>
 </p>
 
-A security scanner for Bun that integrates with Socket.dev to detect vulnerabilities and supply chain risks in npm packages during installation.
+A security scanner for [Bun](https://bun.sh/) that integrates with [Socket.dev](https://socket.dev/) to detect vulnerabilities and supply chain risks in npm packages during installation.
 
 <div align="center">
     <img src="https://cdn.jsdelivr.net/gh/ryoppippi/bun-socket-scanner@main/docs/screenshot.jpeg">
