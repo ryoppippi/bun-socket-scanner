@@ -57,6 +57,9 @@ async function showStatus(): Promise<void> {
 			case 'none':
 				// This case should not be reached when hasKey is true
 				break;
+			default:
+				status.source satisfies never;
+				logger.error('⚠️  Unknown source of API key');
 		}
 	}
 	else {
