@@ -1,6 +1,7 @@
 import process from 'node:process';
 import { cli, define } from 'gunshi';
 import { readPassword } from './input';
+import { logger } from './logger';
 import { deleteApiKey, hasApiKey, setApiKey } from './secrets';
 
 /**
@@ -41,17 +42,17 @@ async function getApiKeyStatus(): Promise<{
 async function showStatus(): Promise<void> {
 	const status = await getApiKeyStatus();
 
-	console.log('Socket.dev API Key Status:');
-	console.log('========================');
+	logger.info('Socket.dev API Key Status:');
+	logger.info('========================');
 
 	if (status.hasKey) {
-		console.log('✅ API key is configured');
+		logger.info('✅ API key is configured');
 		switch (status.source) {
 			case 'environment':
-				console.log('📍 Source: Environment variable (NI_SOCKETDEV_TOKEN)');
+				logger.info('📍 Source: Environment variable (NI_SOCKETDEV_TOKEN)');
 				break;
 			case 'secrets':
-				console.log('📍 Source: Bun.secrets (secure storage)');
+				logger.info('📍 Source: Bun.secrets (secure storage)');
 				break;
 			case 'none':
 				// This case should not be reached when hasKey is true
@@ -59,8 +60,8 @@ async function showStatus(): Promise<void> {
 		}
 	}
 	else {
-		console.log('❌ No API key configured');
-		console.log('💡 Use "bun run src/index.ts set" to configure an API key');
+		logger.info('❌ No API key configured');
+		logger.info('💡 Use "bun run src/index.ts set" to configure an API key');
 	}
 }
 
@@ -73,19 +74,19 @@ const setCommand = define({
 			const apiKey = await readPassword('Enter Socket.dev API key: ');
 
 			if (apiKey.trim() === '') {
-				console.error('❌ API key cannot be empty');
+				logger.error('❌ API key cannot be empty');
 				process.exit(1);
 			}
 
 			await setApiKey(apiKey.trim());
-			console.log('✅ API key has been saved securely');
+			logger.info('✅ API key has been saved securely');
 		}
 		catch (error) {
 			if (error instanceof Error && error.message === 'User cancelled input') {
-				console.log('\n⚠️  Operation cancelled');
+				logger.info('\n⚠️  Operation cancelled');
 				process.exit(0);
 			}
-			console.error('❌ Failed to set API key:', error);
+			logger.error('❌ Failed to set API key:', error);
 			process.exit(1);
 		}
 	},
@@ -97,10 +98,10 @@ const deleteCommand = define({
 	run: async () => {
 		try {
 			await deleteApiKey();
-			console.log('✅ API key has been deleted');
+			logger.info('✅ API key has been deleted');
 		}
 		catch (error) {
-			console.error('❌ Failed to delete API key:', error);
+			logger.error('❌ Failed to delete API key:', error);
 			process.exit(1);
 		}
 	},
@@ -118,15 +119,15 @@ const mainCommand = define({
 	name: 'bun-socket-scanner',
 	description: 'Manage Socket.dev API key',
 	run: async () => {
-		console.log('Socket.dev API Key Management');
-		console.log('============================');
-		console.log('');
-		console.log('Available commands:');
-		console.log('  set    - Set the API key');
-		console.log('  delete - Delete the stored API key');
-		console.log('  status - Show current configuration status');
-		console.log('');
-		console.log('Usage: bun run src/index.ts <command>');
+		logger.info('Socket.dev API Key Management');
+		logger.info('============================');
+		logger.info('');
+		logger.info('Available commands:');
+		logger.info('  set    - Set the API key');
+		logger.info('  delete - Delete the stored API key');
+		logger.info('  status - Show current configuration status');
+		logger.info('');
+		logger.info('Usage: bun run src/index.ts <command>');
 	},
 });
 

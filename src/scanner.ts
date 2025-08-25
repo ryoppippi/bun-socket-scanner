@@ -1,4 +1,5 @@
 import { SocketSdk } from '@socketsecurity/sdk';
+import { logger } from './logger';
 import { getApiKey } from './secrets';
 
 /** Threshold for fatal security risk level (below this score triggers fatal advisory) */
@@ -132,7 +133,7 @@ export const scanner: Bun.Security.Scanner = {
 				}
 			}
 			catch (error) {
-				console.warn(`Socket.dev API error for ${pkg.name}@${pkg.version}:`, error);
+				logger.warn(`Socket.dev API error for ${pkg.name}@${pkg.version}:`, error);
 			}
 		}
 
