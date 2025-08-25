@@ -133,7 +133,7 @@ test('scanner - custom threshold environment variables', async () => {
 		warnMessages.push(args.join(' '));
 	}, { raw: (...args: unknown[]) => {
 		warnMessages.push(args.join(' '));
-	}});
+	} });
 
 	// Re-import scanner to pick up new environment variables
 	delete require.cache[require.resolve('./scanner')];
@@ -164,7 +164,7 @@ test('scanner - invalid threshold environment variables use defaults', async () 
 		warnMessages.push(args.join(' '));
 	}, { raw: (...args: unknown[]) => {
 		warnMessages.push(args.join(' '));
-	}});
+	} });
 
 	// Re-import scanner to pick up new environment variables
 	delete require.cache[require.resolve('./scanner')];
