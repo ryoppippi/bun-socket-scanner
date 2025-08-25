@@ -22,13 +22,14 @@ const scanner: Bun.Security.Scanner = {
 	version: '1',
 	/**
 	 * Scans packages for security vulnerabilities and supply chain risks
-	 * @param packages - Array of packages to scan
+	 * @param packages - The package configuration containing an array of packages to scan
+	 * @param packages.packages - Array of packages to scan
 	 * @returns Promise resolving to array of security advisories
 	 */
 	scan: async ({ packages }) => {
 		const apiKey = getSocketApiKey();
 
-		if (!apiKey) {
+		if (apiKey === undefined || apiKey === '') {
 			console.warn('NI_SOCKETDEV_TOKEN not found, skipping security scan');
 			return [];
 		}
@@ -43,31 +44,32 @@ const scanner: Bun.Security.Scanner = {
 					client.getScoreByNPMPackage(pkg.name, pkg.version),
 				]);
 
-				let hasIssues = false;
 				let riskLevel: Bun.Security.Advisory['level'] | 'safe' = 'safe';
 				let description = '';
 
 				if (issuesResult.status === 'fulfilled' && issuesResult.value.success) {
 					const issues = issuesResult.value.data;
-					if (issues && issues.length > 0) {
-						hasIssues = true;
-
+					if (issues.length > 0) {
 						// Filter for supplyChainRisk category issues like ni.zsh
-						const supplyChainIssues = issues.filter((issue: any) =>
-							issue.value?.category === 'supplyChainRisk',
-						);
+						const supplyChainIssues = issues.filter((issue: unknown) => {
+							const issueValue = issue as { value?: { category?: string } };
+							return issueValue.value?.category === 'supplyChainRisk';
+						});
 
 						if (supplyChainIssues.length > 0) {
 							// Sort by severity: critical > high > middle > low
 							const severityOrder = ['critical', 'high', 'middle', 'low'];
-							const sortedIssues = supplyChainIssues.sort((a: any, b: any) => {
-								const aIndex = severityOrder.indexOf(a.value?.severity);
-								const bIndex = severityOrder.indexOf(b.value?.severity);
+							const sortedIssues = supplyChainIssues.sort((a: unknown, b: unknown) => {
+								const aValue = a as { value?: { severity?: string } };
+								const bValue = b as { value?: { severity?: string } };
+								const aIndex = severityOrder.indexOf(aValue.value?.severity ?? '');
+								const bIndex = severityOrder.indexOf(bValue.value?.severity ?? '');
 								return aIndex - bIndex;
 							});
 
 							// Get highest severity issue
-							const highestSeverity = sortedIssues[0]?.value?.severity;
+							const firstIssue = sortedIssues[0] as { value?: { severity?: string } } | undefined;
+							const highestSeverity = firstIssue?.value?.severity;
 
 							if (highestSeverity === 'critical' || highestSeverity === 'high') {
 								riskLevel = 'fatal';
@@ -77,9 +79,10 @@ const scanner: Bun.Security.Scanner = {
 							}
 
 							// Create message like ni.zsh format
-							const messages = sortedIssues.map((issue: any) =>
-								`${issue.value?.severity} ${issue.type}`,
-							).filter((msg: string, index: number, array: string[]) =>
+							const messages = sortedIssues.map((issue: unknown) => {
+								const issueTyped = issue as { value?: { severity?: string }; type?: string };
+								return `${issueTyped.value?.severity ?? ''} ${issueTyped.type ?? ''}`;
+							}).filter((msg: string, index: number, array: string[]) =>
 								array.indexOf(msg) === array.lastIndexOf(msg), // Remove duplicates
 							);
 
@@ -87,7 +90,11 @@ const scanner: Bun.Security.Scanner = {
 						}
 						else {
 							riskLevel = 'warn';
-							description = `Security issues found: ${issues.map((i: any) => i.type).join(', ')}`;
+							const issueTypes = issues.map((i: unknown) => {
+								const issue = i as { type?: string };
+								return issue.type ?? 'unknown';
+							});
+							description = `Security issues found: ${issueTypes.join(', ')}`;
 						}
 					}
 				}
@@ -105,7 +112,9 @@ const scanner: Bun.Security.Scanner = {
 						else if (riskScore < WARN_RISK_THRESHOLD) {
 							if (riskLevel !== 'fatal') {
 								riskLevel = 'warn';
-								if (!description) { description = `Moderate supply chain risk (score: ${riskScore})`; }
+								if (description === '') {
+									description = `Moderate supply chain risk (score: ${riskScore})`;
+								}
 							}
 						}
 					}
@@ -122,7 +131,7 @@ const scanner: Bun.Security.Scanner = {
 					advisories.push({
 						level: riskLevel,
 						package: pkg.name,
-						description: description || `Security concerns detected for ${pkg.name}@${pkg.version}`,
+						description: description !== '' ? description : `Security concerns detected for ${pkg.name}@${pkg.version}`,
 						url,
 					});
 				}
