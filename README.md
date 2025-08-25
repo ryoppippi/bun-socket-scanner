@@ -106,6 +106,8 @@ bunx bun-socket-scanner status
 bunx bun-socket-scanner delete
 ```
 
+API keys are securely stored using [Bun.secrets](https://bun.com/blog/bun-v1.2.21#bun-secrets-native-secrets-manager-for-cli-tools), which provides native keychain/credential manager integration.
+
 ## How It Works
 
 1. **Package Detection**: When `bun install` runs, Bun calls the scanner with package information
