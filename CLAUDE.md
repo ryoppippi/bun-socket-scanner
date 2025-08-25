@@ -1,107 +1,82 @@
----
+# CLAUDE.md
 
-Default to using Bun instead of Node.js.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Bun automatically loads .env, so don't use dotenv.
+## Project Overview
 
-## APIs
+This is `bun-socket-scanner`, a Bun security scanner that integrates with Socket.dev for package vulnerability detection. The scanner implements the `Bun.Security.Scanner` interface and automatically scans npm packages during `bun install` for security issues and supply chain risks.
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+## Development Commands
 
-## Testing
+### Core Development
+- `bun test` - Run all tests using Bun's built-in test runner
+- `bun run typecheck` - Run TypeScript type checking with `tsgo --noEmit`
+- `bun run lint` - Run ESLint with caching
+- `bun run format` - Auto-fix ESLint issues
+- `bun run start` - Run the CLI interface for API key management
 
-Use `bun test` to run tests.
+### Testing
+- All test files are located in `src/` directory with `.test.ts` suffix
+- Tests use Bun's built-in test framework (`bun:test`)
+- Mock the Socket SDK using `mock.module()` for API testing
 
-```ts#index.test.ts
-import { expect, test } from 'bun:test';
+## Architecture
 
-test('hello world', () => {
-	expect(1).toBe(1);
-});
+### Core Components
+
+**Scanner (`src/scanner.ts`)**
+- Main security scanner implementing `Bun.Security.Scanner` interface
+- Integrates with Socket.dev API to check package vulnerabilities and supply chain risks
+- Uses two risk thresholds: `FATAL_RISK_THRESHOLD = 0.3`, `WARN_RISK_THRESHOLD = 0.5`
+- Returns advisories with `fatal` or `warn` levels based on severity
+
+**Secrets Management (`src/secrets.ts`)**
+- Handles Socket.dev API key storage using `Bun.secrets`
+- Prioritizes environment variable `NI_SOCKETDEV_TOKEN` over stored secrets
+- Provides secure storage/retrieval operations
+
+**CLI Interface (`src/cli.ts`)**
+- Command-line interface for API key management using `gunshi` CLI framework
+- Commands: `set`, `delete`, `status` for managing Socket.dev API keys
+- Entry point: `src/index.ts` (when `import.meta.main`)
+
+**Input Utilities (`src/input.ts`)**
+- Secure password input with masking for API key entry
+- Handles Ctrl+C cancellation and backspace editing
+
+### Package Structure
+
+- **Entry point**: `src/index.ts` exports the scanner and handles CLI mode
+- **Scanner interface**: Implements `Bun.Security.Scanner` with version '1'
+- **Dependencies**: 
+  - `@socketsecurity/sdk` for Socket.dev API integration
+  - `gunshi` for CLI framework
+  - `consola` for logging
+
+## Configuration Files
+
+- **`bunfig.toml`**: Configures this package as the security scanner
+- **`eslint.config.js`**: Uses `@ryoppippi/eslint-config` with TypeScript support
+- **`tsconfig.json`**: TypeScript configuration with strict settings and Bun types
+- **Environment**: Requires `NI_SOCKETDEV_TOKEN` environment variable or uses `Bun.secrets`
+
+## Security Scanner Integration
+
+The scanner is designed to be used in `bunfig.toml`:
+```toml
+[install.security]
+scanner = "bun-socket-scanner"
 ```
 
-## Frontend
+It scans packages during installation and:
+1. Queries Socket.dev API for security issues and supply chain scores
+2. Categorizes risks as `fatal` (blocks install) or `warn` (prompts user)
+3. Provides detailed descriptions and URLs for security reports
+4. Handles API errors gracefully without blocking installations
 
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
+## Testing Strategy
 
-Server:
-
-```ts#index.ts
-import index from './index.html';
-
-Bun.serve({
-	routes: {
-		'/': index,
-		'/api/users/:id': {
-			GET: (req) => {
-				return new Response(JSON.stringify({ id: req.params.id }));
-			},
-		},
-	},
-	// optional websocket support
-	websocket: {
-		open: (ws) => {
-			ws.send('Hello, world!');
-		},
-		message: (ws, message) => {
-			ws.send(message);
-		},
-		close: (ws) => {
-			// handle close
-		}
-	},
-	development: {
-		hmr: true,
-		console: true,
-	}
-});
-```
-
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
-
-```html#index.html
-<html>
-	<body>
-		<h1>Hello, world!</h1>
-		<script type="module" src="./frontend.tsx"></script>
-	</body>
-</html>
-```
-
-With the following `frontend.tsx`:
-
-```tsx#frontend.tsx
-import React from 'react';
-
-import { createRoot } from 'react-dom/client';
-
-// import .css files directly and it works
-import './index.css';
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-	return <h1>Hello, world!</h1>;
-}
-
-root.render(<Frontend />);
-```
-
-Then, run index.ts
-
-```sh
-bun --hot ./index.ts
-```
-
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.md`.
+- Comprehensive test coverage in `src/index.test.ts` and `src/scanner.test.ts`
+- Tests mock the Socket SDK to simulate various security scenarios
+- Covers fatal/warning risk detection, API error handling, and multi-package scanning
+- Uses environment variable mocking for API key testing
