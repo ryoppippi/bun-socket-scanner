@@ -36,7 +36,7 @@ To use this scanner, you need a Socket.dev API key. Follow these steps:
 
 For more details, see the [ni.zsh Socket.dev integration guide](https://efcl.info/2023/08/29/ni.zsh-socket.dev/).
 
-### 3. Configure API Key
+### 1. Configure API Key
 
 You can set the API key using either method:
 
@@ -59,7 +59,7 @@ bunx bun-socket-scanner status
 bunx bun-socket-scanner delete
 ```
 
-### 4. Configure Bun
+### 2. Configure Bun
 
 Add the scanner to your `bunfig.toml`:
 
