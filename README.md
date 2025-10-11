@@ -1,3 +1,5 @@
+**Deprecated**: This project is no longer maintained. Please consider using [@socketsecurity/bun-security-scanner](https://www.npmjs.com/package/@socketsecurity/bun-security-scanner) instead.
+
 # Bun Socket Security Scanner
 
 <p align="center">
